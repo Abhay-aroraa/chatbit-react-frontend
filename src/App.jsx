@@ -61,7 +61,7 @@ function App() {
     <div className="flex flex-col h-screen bg-gradient-to-br from-pink-100 via-rose-200 to-pink-100 shadow-inner rounded-xl overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-pink-500 to-rose-400 text-white text-center py-4 font-extrabold text-xl shadow-md">
-        💘 Chat With Your Boyfriend 💘
+       Abhay 💘 
       </div>
 
       {/* Messages */}
