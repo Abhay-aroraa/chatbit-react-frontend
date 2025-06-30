@@ -3,65 +3,96 @@ import axios from "axios";
 import EmojiPicker from "emoji-picker-react";
 
 function App() {
-  const [messages, setMessages] = useState([
-    {
-      from: "ai",
-      text: "Hey baby 💕 I'm your sweet boyfriend! How can I make you smile today?",
-    },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [showEmoji, setShowEmoji] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
+  
+  // Load messages from localStorage on first render
+  useEffect(() => {
+    const savedMessages = localStorage.getItem("chatMessages");
+    if (savedMessages) {
+      setMessages(JSON.parse(savedMessages));
+    } else {
+      setMessages([{ from: "ai", text: "Hey dude 🫶🏻" }]);
+    }
+  }, []);
+
+  // Save messages to localStorage on every update
+  useEffect(() => {
+    localStorage.setItem("chatMessages", JSON.stringify(messages));
+  }, [messages]);
+
+  // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Focus input
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
-  const sendMessage = async () => {
-    if (input.trim() === "") return;
+const sendMessage = async () => {
+  if (input.trim() === "") return;
 
-    const userMessage = { from: "user", text: input };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
-    setLoading(true);
-    setShowEmoji(false);
+  const userMessage = { from: "user", text: input };
+  setMessages((prev) => {
+    const limited = [...prev, userMessage].slice(-50);
+    return limited;
+  });
+  setInput("");
+  setLoading(true);
+  setShowEmoji(false);
 
-    try {
-      const res = await axios.post("https://chatbotnew-backend.onrender.com/api/chat", {
-        message: input,
-      });
-      const aiReply = res.data;
-      setMessages((prev) => [...prev, { from: "ai", text: aiReply }]);
-    } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { from: "ai", text: "Oops! Something went wrong 😢" },
-      ]);
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const res = await axios.post("https://chatbotnew-backend.onrender.com/api/chat", {
+      message: input,
+    });
+    const aiReply = res.data;
+    setMessages((prev) => {
+      const limited = [...prev, { from: "ai", text: aiReply }].slice(-50);
+      return limited;
+    });
+  } catch (err) {
+    setMessages((prev) => {
+      const limited = [...prev, { from: "ai", text: "Oops! Something went wrong 😢" }].slice(-50);
+      return limited;
+    });
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleEmojiClick = (emojiData) => {
     setInput((prev) => prev + emojiData.emoji);
   };
 
-  return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-pink-100 via-rose-200 to-pink-100 overflow-hidden">
+  const clearChat = () => {
+    localStorage.removeItem("chatMessages");
+    setMessages([{ from: "ai", text: "Hey dude 🫶🏻" }]);
+  };
 
-      {/* Sticky Header */}
-      <div className="sticky top-0 z-10 bg-gradient-to-r from-pink-500 to-rose-400 text-white text-center py-4 font-extrabold text-lg shadow-md">
-        Abhay 🫶🏻
+  return (
+    <div className="flex flex-col h-screen w-full max-w-screen-sm mx-auto bg-gradient-to-br from-pink-100 via-rose-200 to-pink-100 overflow-hidden">
+
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-gradient-to-r from-pink-500 to-rose-400 text-white text-center py-4 font-extrabold text-lg shadow-md flex justify-between items-center px-4">
+        <span>Abhay 🫶🏻</span>
+        <button
+          onClick={clearChat}
+          className="text-xs underline font-normal text-white hover:text-gray-200"
+        >
+          Clear Chat
+        </button>
       </div>
 
-      {/* Chat Messages (Scroll Area) */}
+      {/* Chat Messages */}
       <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
         {messages.map((msg, index) => (
           <div
@@ -94,7 +125,7 @@ function App() {
         <div ref={messagesEndRef}></div>
       </div>
 
-      {/* Sticky Input Section */}
+      {/* Input Section */}
       <div className="sticky bottom-0 z-10 p-2 bg-white border-t border-gray-300 flex items-center gap-2">
         <button
           className="text-xl"
@@ -104,7 +135,7 @@ function App() {
         </button>
 
         {showEmoji && (
-          <div className="absolute bottom-16 left-2 z-50 max-w-xs">
+          <div className="absolute bottom-20 left-2 z-50 w-[90vw] max-w-xs">
             <EmojiPicker onEmojiClick={handleEmojiClick} />
           </div>
         )}
