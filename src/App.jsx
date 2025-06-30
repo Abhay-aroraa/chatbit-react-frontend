@@ -38,9 +38,8 @@ function App() {
       });
       console.log("Server Response:", res.data);
 
-
       const aiReply = res.data;
-   
+
       setMessages((prev) => [...prev, { from: "ai", text: aiReply }]);
     } catch (err) {
       setMessages((prev) => [
@@ -58,21 +57,21 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-pink-100 via-rose-200 to-pink-100 shadow-inner rounded-xl overflow-hidden">
+    <div className="flex flex-col h-screen max-h-screen bg-gradient-to-br from-pink-100 via-rose-200 to-pink-100 shadow-inner rounded-xl overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-pink-500 to-rose-400 text-white text-center py-4 font-extrabold text-xl shadow-md">
-       Abhay 💘 
+      <div className="bg-gradient-to-r from-pink-500 to-rose-400 text-white text-center py-4 font-extrabold text-lg sm:text-xl shadow-md">
+        Abhay 💘
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+      <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-2 sm:py-3 space-y-2 sm:space-y-3">
         {messages.map((msg, index) => (
           <div
             key={index}
             className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`rounded-2xl px-4 py-3 max-w-[80%] text-sm leading-relaxed shadow-md ${
+              className={`rounded-2xl px-4 py-3 max-w-[85%] text-sm leading-relaxed shadow-md ${
                 msg.from === "user"
                   ? "bg-gradient-to-br from-pink-400 to-pink-600 text-white rounded-br-md"
                   : "bg-white text-gray-800 rounded-bl-md"
@@ -98,7 +97,7 @@ function App() {
       </div>
 
       {/* Input Section */}
-      <div className="relative p-3 bg-white border-t border-gray-300 flex items-center gap-2">
+      <div className="relative p-2 sm:p-3 bg-white border-t border-gray-300 flex items-center gap-2">
         <button
           className="text-xl"
           onClick={() => setShowEmoji((prev) => !prev)}
@@ -107,7 +106,7 @@ function App() {
         </button>
 
         {showEmoji && (
-          <div className="absolute bottom-16 left-2 z-50">
+          <div className="absolute bottom-14 left-2 z-50 max-w-xs sm:max-w-sm">
             <EmojiPicker onEmojiClick={handleEmojiClick} />
           </div>
         )}
