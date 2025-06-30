@@ -33,7 +33,7 @@ function App() {
     setShowEmoji(false);
 
     try {
-      const res = await axios.post("http://localhost:8080/api/chat", {
+      const res = await axios.post("https://chatbotnew-backend.onrender.com/api/chat", {
         message: input,
       });
       console.log("Server Response:", res.data);
